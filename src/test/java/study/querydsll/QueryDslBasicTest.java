@@ -10,7 +10,9 @@ import study.querydsll.entity.Member;
 import study.querydsll.entity.Team;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,6 +28,9 @@ public class QueryDslBasicTest {
 
     @PersistenceContext
     EntityManager em;
+
+    @PersistenceUnit
+    EntityManagerFactory emf;
 
     JPAQueryFactory queryFactory;
 
@@ -264,5 +269,22 @@ public class QueryDslBasicTest {
         for (Tuple tuple : result) {
             System.out.println("tuple = " + tuple);
         }
+    }
+
+    @Test
+    void fetchJoin_no() {
+        
+        em.flush();
+        em.clear();
+
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        boolean isLoaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
+
+        assertThat(isLoaded).isFalse();
+
     }
 }
