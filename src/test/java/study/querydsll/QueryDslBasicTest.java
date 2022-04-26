@@ -3,6 +3,7 @@ package study.querydsll;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -539,5 +540,42 @@ public class QueryDslBasicTest {
                 .fetchCount();
 
         assertThat(afterMemberCount).isEqualTo(beforeMemberCount - deleteCount);
+    }
+
+    @Test
+    void sql_function() {
+
+        // Member1 -> M1로 변경하는 쿼리
+
+        List<String> result = queryFactory
+                .select(Expressions.stringTemplate("function('replace', {0}, {1}, {2})",
+                        member.username, "member", "M"))
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+        
+        // output
+        // s = M1
+        // s = M2
+        // s = M3
+        // s = M4
+    }
+    
+    @Test
+    void sql_embedded_function() {
+        
+        // username 소문자 변경 후 비교 (username이 소문자로만 구성되어 있는 멤버 조회)
+
+        em.persist(new Member("Member1"));
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq(member.username.lower()))
+                .fetch();
+
+        assertThat(result.size()).isEqualTo(4);
     }
 }
