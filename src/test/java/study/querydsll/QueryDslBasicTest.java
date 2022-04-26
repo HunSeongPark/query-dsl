@@ -75,15 +75,32 @@ public class QueryDslBasicTest {
     }
 
     @Test
-    void search() {
+    void search_and() {
 
-        // find member where username = member1 & age = 10
+        // find member where username = member1 && age = 10
         Member findMember = queryFactory
                 .selectFrom(member)
+//                .where(member.username.eq("member1").and(member.age.eq(10)))
                 .where(member.username.eq("member1"), member.age.eq(10))
                 .fetchOne();
 
         assertThat(findMember.getUsername()).isEqualTo("member1");
         assertThat(findMember.getAge()).isEqualTo(10);
+    }
+
+    @Test
+    void search_or() {
+
+        // find member where username = member1 || age = 20
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1").or(member.age.eq(20)))
+                .fetch();
+
+        assertThat(result.size()).isEqualTo(2);
+
+        assertThat(result).extracting("username")
+                .containsExactly("member1", "member2");
+
     }
 }
