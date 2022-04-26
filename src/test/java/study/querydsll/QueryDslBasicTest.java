@@ -326,4 +326,19 @@ public class QueryDslBasicTest {
         assertThat(findMember.getAge()).isEqualTo(40);
 
     }
+
+    @Test
+    void projection_tuple() {
+
+        List<Tuple> result = queryFactory
+                .select(member.username, member.age)
+                .from(member)
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("tuple = " + tuple);
+            System.out.println("username = " + tuple.get(member.username));
+            System.out.println("age = " + tuple.get(member.age));
+        }
+    }
 }
