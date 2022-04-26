@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsll.entity.Member;
-import study.querydsll.entity.QTeam;
 import study.querydsll.entity.Team;
 
 import javax.persistence.EntityManager;
@@ -16,7 +15,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static study.querydsll.entity.QMember.member;
-import static study.querydsll.entity.QTeam.*;
+import static study.querydsll.entity.QTeam.team;
 
 /**
  * Created by Hunseong on 2022/04/27
@@ -197,5 +196,19 @@ public class QueryDslBasicTest {
         assertThat(teamA.get(member.age.avg())).isEqualTo(15);
         assertThat(teamB.get(member.age.avg())).isEqualTo(35);
 
+    }
+
+    @Test
+    void join() {
+
+        // teamA에 소속된 모든 회원
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .join(member.team, team)
+                .where(team.name.eq("teamA"))
+                .fetch();
+
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result).extracting("username").containsExactly("member1", "member2");
     }
 }
