@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsll.dto.MemberDto;
+import study.querydsll.dto.QMemberDto;
 import study.querydsll.entity.Member;
 import study.querydsll.entity.QMember;
 import study.querydsll.entity.Team;
@@ -388,6 +389,19 @@ public class QueryDslBasicTest {
 
         List<MemberDto> result = queryFactory
                 .select(Projections.constructor(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
+        }
+    }
+
+    @Test
+    void projection_dto_queryprojection() {
+
+        List<MemberDto> result = queryFactory
+                .select(new QMemberDto(member.username, member.age))
                 .from(member)
                 .fetch();
 
