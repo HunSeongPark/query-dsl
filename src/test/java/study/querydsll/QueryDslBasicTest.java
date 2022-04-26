@@ -411,7 +411,7 @@ public class QueryDslBasicTest {
             System.out.println("memberDto = " + memberDto);
         }
     }
-    
+
     @Test
     void dynamic_query_BooleanBuilder() {
 
@@ -438,5 +438,40 @@ public class QueryDslBasicTest {
                 .selectFrom(member)
                 .where(builder)
                 .fetch();
+    }
+
+    @Test
+    void dynamic_query_where_parameter() {
+
+        // dynamic variable
+        String usernameParam = "member2";
+        Integer ageParam = 20;
+
+        List<Member> result = searchMember2(usernameParam, ageParam);
+
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember2(String usernameParam, Integer ageParam) {
+
+        return queryFactory
+                .selectFrom(member)
+                .where(memberEq(usernameParam, ageParam))
+                .fetch();
+    }
+
+    // BooleanBuilder 조합
+    private BooleanBuilder memberEq(String usernameParam, Integer ageParam) {
+        return usernameEq(usernameParam).and(ageEq(ageParam));
+    }
+
+    private BooleanBuilder usernameEq(String usernameParam) {
+        return hasText(usernameParam) ?
+                new BooleanBuilder(member.username.eq(usernameParam)) : new BooleanBuilder();
+    }
+
+    private BooleanBuilder ageEq(Integer ageParam) {
+        return ageParam != null ?
+                new BooleanBuilder(member.age.eq(ageParam)) : new BooleanBuilder();
     }
 }
