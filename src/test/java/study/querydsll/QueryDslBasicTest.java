@@ -73,4 +73,17 @@ public class QueryDslBasicTest {
         assertThat(findMember.getUsername()).isEqualTo("member1");
 
     }
+
+    @Test
+    void search() {
+
+        // find member where username = member1 & age = 10
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1"), member.age.eq(10))
+                .fetchOne();
+
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+        assertThat(findMember.getAge()).isEqualTo(10);
+    }
 }
