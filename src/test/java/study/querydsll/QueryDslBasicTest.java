@@ -211,4 +211,21 @@ public class QueryDslBasicTest {
         assertThat(result.size()).isEqualTo(2);
         assertThat(result).extracting("username").containsExactly("member1", "member2");
     }
+
+    @Test
+    void theta_join() {
+
+        // 멤버 이름과 팀 이름이 같은 멤버 조회
+
+        em.persist(new Member("teamA"));
+        em.persist(new Member("teamB"));
+
+        List<Member> result = queryFactory
+                .select(member)
+                .from(member, team)
+                .where(member.username.eq(team.name))
+                .fetch();
+
+        assertThat(result).extracting("username").containsExactly("teamA", "teamB");
+    }
 }
