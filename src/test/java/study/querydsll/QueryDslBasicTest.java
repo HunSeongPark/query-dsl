@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.querydsll.dto.MemberDto;
 import study.querydsll.entity.Member;
 import study.querydsll.entity.QMember;
 import study.querydsll.entity.Team;
@@ -235,7 +236,7 @@ public class QueryDslBasicTest {
 
         assertThat(result).extracting("username").containsExactly("teamA", "teamB");
     }
-    
+
     @Test
     void join_on_filtering() {
 
@@ -252,10 +253,10 @@ public class QueryDslBasicTest {
         }
 
     }
-    
+
     @Test
     void join_on_no_relation() {
-        
+
         // 회원의 이름과 팀의 이름이 같은 대상 외부 조인
 
         em.persist(new Member("teamA"));
@@ -308,10 +309,10 @@ public class QueryDslBasicTest {
 
         assertThat(isLoaded).isTrue();
     }
-    
+
     @Test
     void subQuery() {
-        
+
         // 나이가 가장 많은 회원 조회
         QMember memberSub = new QMember("memberSub");
 
@@ -340,5 +341,18 @@ public class QueryDslBasicTest {
             System.out.println("username = " + tuple.get(member.username));
             System.out.println("age = " + tuple.get(member.age));
         }
+    }
+
+    @Test
+    void projection_dto_jpa() {
+
+        List<MemberDto> result = em.createQuery
+                ("select new study.querydsll.dto.MemberDto(m.username, m.age) from Member m"
+                        , MemberDto.class).getResultList();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
+        }
+
     }
 }
