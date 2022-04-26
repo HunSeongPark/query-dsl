@@ -18,7 +18,8 @@ import java.util.List;
 @ToString
 public class Team {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "team_id")
     private Long id;
 
