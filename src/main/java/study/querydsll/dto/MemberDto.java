@@ -8,13 +8,13 @@ import lombok.Data;
 @Data
 public class MemberDto {
 
-    private String username;
+    private String name;
     private int age;
 
     public MemberDto() {}
 
-    public MemberDto(String username, int age) {
-        this.username = username;
+    public MemberDto(String name, int age) {
+        this.name = name;
         this.age = age;
     }
 }

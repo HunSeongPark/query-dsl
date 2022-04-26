@@ -1,6 +1,7 @@
 package study.querydsll;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -354,5 +355,44 @@ public class QueryDslBasicTest {
             System.out.println("memberDto = " + memberDto);
         }
 
+    }
+
+    @Test
+    void projection_dto_setter() {
+
+        List<MemberDto> result = queryFactory
+                .select(Projections.bean(MemberDto.class, member.username.as("name"), member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
+        }
+    }
+
+    @Test
+    void projection_dto_fields() {
+
+        List<MemberDto> result = queryFactory
+                .select(Projections.fields(MemberDto.class, member.username.as("name"), member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
+        }
+    }
+
+    @Test
+    void projection_dto_constructor() {
+
+        List<MemberDto> result = queryFactory
+                .select(Projections.constructor(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
+        }
     }
 }
