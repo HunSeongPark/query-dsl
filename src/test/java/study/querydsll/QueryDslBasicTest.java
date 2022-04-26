@@ -474,4 +474,70 @@ public class QueryDslBasicTest {
         return ageParam != null ?
                 new BooleanBuilder(member.age.eq(ageParam)) : new BooleanBuilder();
     }
+
+    @Test
+    void bulk_update() {
+
+        long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.gt(29))
+                .execute();
+
+        em.flush();
+        em.clear();
+
+        List<Member> members = queryFactory
+                .selectFrom(member)
+                .where(member.age.gt(29))
+                .fetch();
+
+        assertThat(members).extracting("username").containsExactly("비회원", "비회원");
+        assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    void bulk_update_add() {
+
+        Member beforeFirstMember = queryFactory
+                .selectFrom(member)
+                .where(member.age.gt(29))
+                .fetchFirst();
+
+        long count = queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))
+                .where(member.age.gt(29))
+                .execute();
+
+        em.flush();
+        em.clear();
+
+        Member afterFirstMember = queryFactory
+                .selectFrom(member)
+                .where(member.age.gt(29))
+                .fetchFirst();
+
+        assertThat(afterFirstMember.getAge()).isEqualTo(beforeFirstMember.getAge() + 1);
+        assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    void bulk_delete() {
+
+        long beforeMemberCount = queryFactory
+                .selectFrom(member)
+                .fetchCount();
+
+        long deleteCount = queryFactory
+                .delete(member)
+                .where(member.age.gt(29))
+                .execute();
+
+        long afterMemberCount = queryFactory
+                .selectFrom(member)
+                .fetchCount();
+
+        assertThat(afterMemberCount).isEqualTo(beforeMemberCount - deleteCount);
+    }
 }
