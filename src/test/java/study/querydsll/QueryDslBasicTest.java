@@ -273,12 +273,13 @@ public class QueryDslBasicTest {
 
     @Test
     void fetchJoin_no() {
-        
+
         em.flush();
         em.clear();
 
         Member findMember = queryFactory
                 .selectFrom(member)
+                .join(member.team, team)
                 .where(member.username.eq("member1"))
                 .fetchOne();
 
@@ -286,5 +287,23 @@ public class QueryDslBasicTest {
 
         assertThat(isLoaded).isFalse();
 
+    }
+
+    @Test
+    void fetchJoin() {
+
+        em.flush();
+        em.clear();
+
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .join(member.team, team)
+                .fetchJoin()
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        boolean isLoaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
+
+        assertThat(isLoaded).isTrue();
     }
 }
