@@ -103,4 +103,34 @@ public class QueryDslBasicTest {
                 .containsExactly("member1", "member2");
 
     }
+
+
+    /**
+     * 정렬 조건
+     * 1. 회원 나이 내림차순 (desc)
+     * 2. 회원 이름 오름차순 (asc)
+     * 3. 단, 2에서 회원 이름이 없으면 마지막에 출력 (nulls last)
+     */
+    @Test
+    void sort() {
+        Member member1 = new Member("member1", 30);
+        Member member2 = new Member("member2", 21);
+        Member member35 = new Member("member35", 23);
+        Member member4 = new Member("member4", 23);
+        Member memberNull = new Member(null, 30);
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member35);
+        em.persist(member4);
+        em.persist(memberNull);
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .orderBy(member.age.desc(), member.username.asc().nullsLast())
+                .fetch();
+
+        for (Member member : result) {
+            System.out.println("member = " + member);
+        }
+    }
 }
