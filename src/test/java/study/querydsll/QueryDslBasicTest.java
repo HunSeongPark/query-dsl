@@ -1,12 +1,14 @@
 package study.querydsll;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsll.entity.Member;
+import study.querydsll.entity.QMember;
 import study.querydsll.entity.Team;
 
 import javax.persistence.EntityManager;
@@ -305,5 +307,23 @@ public class QueryDslBasicTest {
         boolean isLoaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
 
         assertThat(isLoaded).isTrue();
+    }
+    
+    @Test
+    void subQuery() {
+        
+        // 나이가 가장 많은 회원 조회
+        QMember memberSub = new QMember("memberSub");
+
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(member.age.eq(
+                        JPAExpressions
+                                .select(memberSub.age.max())
+                                .from(memberSub)))
+                .fetchOne();
+
+        assertThat(findMember.getAge()).isEqualTo(40);
+
     }
 }
