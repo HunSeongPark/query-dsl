@@ -46,4 +46,21 @@ class MemberJpaRepositoryTest {
         assertThat(allResult).containsExactly(member);
         assertThat(usernameResult).containsExactly(member);
     }
+
+    @Test
+    void basicTest_QueryDsl() {
+
+        // given
+        Member member = new Member("member1", 10);
+
+
+        // when
+        memberJpaRepository.save(member);
+        List<Member> allResult = memberJpaRepository.findAll_QueryDsl();
+        List<Member> usernameResult = memberJpaRepository.findByUsername_QueryDsl("member1");
+
+        // then
+        assertThat(allResult).containsExactly(member);
+        assertThat(usernameResult).containsExactly(member);
+    }
 }
