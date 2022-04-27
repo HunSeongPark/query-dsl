@@ -1,7 +1,11 @@
 package study.querydsll.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import study.querydsll.dto.MemberSearchCond;
 import study.querydsll.dto.MemberTeamDto;
 import study.querydsll.dto.QMemberTeamDto;
@@ -32,6 +36,55 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .join(member.team, team)
                 .where(memberSearchEq(condition))
                 .fetch();
+    }
+
+    /**
+     * 단순한 페이징
+     * 조회 쿼리 / 페이징 쿼리를 분리하지 않고 fetchResults()를 통해 한번에 조회
+     */
+    @Override
+    public Page<MemberTeamDto> searchPageSimple(MemberSearchCond condition, Pageable pageable) {
+
+        QueryResults<MemberTeamDto> results = queryFactory
+                .select(new QMemberTeamDto(member.id, member.username, member.age, team.id, team.name))
+                .from(member)
+                .join(member.team, team)
+                .where(memberSearchEq(condition))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<MemberTeamDto> content = results.getResults();
+        long totalCount = results.getTotal();
+
+        return new PageImpl<>(content, pageable, totalCount);
+    }
+
+    /**
+     * 복잡한 페이징
+     * 조회 쿼리 / 페이징 쿼리를 분리하여 성능 최적화 가능
+     */
+    @Override
+    public Page<MemberTeamDto> searchPageComplex(MemberSearchCond condition, Pageable pageable) {
+
+        // 조회 쿼리
+        List<MemberTeamDto> content = queryFactory
+                .select(new QMemberTeamDto(member.id, member.username, member.age, team.id, team.name))
+                .from(member)
+                .join(member.team, team)
+                .where(memberSearchEq(condition))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        // 카운트 쿼리
+        long totalCount = queryFactory
+                .selectFrom(member)
+                .join(member.team, team)
+                .where(memberSearchEq(condition))
+                .fetchCount();
+
+        return new PageImpl<>(content, pageable, totalCount);
     }
 
     // BooleanBuilder 조립
