@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by Hunseong on 2022/04/27
  */
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
     List<Member> findByUsername(String username);
 }

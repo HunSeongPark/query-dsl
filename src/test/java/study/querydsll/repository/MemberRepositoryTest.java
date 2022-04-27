@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.querydsll.dto.MemberSearchCond;
+import study.querydsll.dto.MemberTeamDto;
 import study.querydsll.entity.Member;
+import study.querydsll.entity.Team;
 
 import javax.persistence.EntityManager;
 
