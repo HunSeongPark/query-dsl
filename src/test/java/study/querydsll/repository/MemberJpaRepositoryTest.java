@@ -87,8 +87,11 @@ class MemberJpaRepositoryTest {
 
         MemberSearchCond condition = new MemberSearchCond(
                 null, "teamB", 35, 40);
-        List<MemberTeamDto> result = memberJpaRepository.searchByBuilder(condition);
-        assertThat(result).extracting("username").containsExactly("member4");
-        assertThat(result).extracting("teamName").containsExactly("teamB");
+
+        List<MemberTeamDto> builderResult = memberJpaRepository.searchByBuilder(condition);
+        List<MemberTeamDto> whereResult = memberJpaRepository.searchByWhereParam(condition);
+
+        assertThat(builderResult).extracting("username").containsExactly("member4");
+        assertThat(whereResult).extracting("teamName").containsExactly("teamB");
     }
 }

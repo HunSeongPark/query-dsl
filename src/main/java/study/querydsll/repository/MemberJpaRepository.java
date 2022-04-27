@@ -114,7 +114,7 @@ public class MemberJpaRepository {
     }
 
     private BooleanBuilder teamNameEq(String teamName) {
-        return hasText(teamName) ? new BooleanBuilder(member.username.eq(teamName)) : new BooleanBuilder();
+        return hasText(teamName) ? new BooleanBuilder(team.name.eq(teamName)) : new BooleanBuilder();
     }
 
     private BooleanBuilder ageGoe(Integer ageGoe) {
