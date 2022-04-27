@@ -2,13 +2,16 @@ package study.querydsll.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import study.querydsll.dto.MemberSearchCond;
 import study.querydsll.dto.MemberTeamDto;
 import study.querydsll.dto.QMemberTeamDto;
+import study.querydsll.entity.Member;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -84,7 +87,21 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .where(memberSearchEq(condition))
                 .fetchCount();
 
-        return new PageImpl<>(content, pageable, totalCount);
+//        return new PageImpl<>(content, pageable, totalCount);
+
+        /**
+         * 카운트 쿼리 최적화
+         * PageableExecutionUtils.getPage(content, pageable, () ->) 사용
+         * count 쿼리 생략 가능한 경우 생략 처리
+         * ex1) 페이지의 시작이면서 컨텐츠 사이즈가 페이지 사이즈보다 작을 때
+         * ex2) 마지막 페이지 (offset + 컨텐츠 사이즈를 더해 전체 사이즈를 구함)
+         */
+        JPAQuery<Member> countQuery = queryFactory
+                .selectFrom(member)
+                .join(member.team, team)
+                .where(memberSearchEq(condition));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
     }
 
     // BooleanBuilder 조립
