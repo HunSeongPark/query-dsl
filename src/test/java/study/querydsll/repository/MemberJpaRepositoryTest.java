@@ -1,6 +1,5 @@
 package study.querydsll.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,10 +12,8 @@ import study.querydsll.entity.Team;
 import javax.persistence.EntityManager;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by Hunseong on 2022/04/27
@@ -89,7 +86,7 @@ class MemberJpaRepositoryTest {
                 null, "teamB", 35, 40);
 
         List<MemberTeamDto> builderResult = memberJpaRepository.searchByBuilder(condition);
-        List<MemberTeamDto> whereResult = memberJpaRepository.searchByWhereParam(condition);
+        List<MemberTeamDto> whereResult = memberJpaRepository.search(condition);
 
         assertThat(builderResult).extracting("username").containsExactly("member4");
         assertThat(whereResult).extracting("teamName").containsExactly("teamB");

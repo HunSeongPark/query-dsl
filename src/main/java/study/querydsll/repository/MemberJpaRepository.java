@@ -1,13 +1,10 @@
 package study.querydsll.repository;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import study.querydsll.dto.MemberSearchCond;
 import study.querydsll.dto.MemberTeamDto;
-import study.querydsll.dto.QMemberDto;
 import study.querydsll.dto.QMemberTeamDto;
 import study.querydsll.entity.Member;
 
@@ -92,7 +89,7 @@ public class MemberJpaRepository {
                 .fetch();
     }
 
-    public List<MemberTeamDto> searchByWhereParam(MemberSearchCond condition) {
+    public List<MemberTeamDto> search(MemberSearchCond condition) {
         return queryFactory
                 .select(new QMemberTeamDto(member.id, member.username, member.age, team.id, team.name))
                 .from(member)
