@@ -9,6 +9,8 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
+import static study.querydsll.entity.QMember.member;
+
 /**
  * Created by Hunseong on 2022/04/27
  */
@@ -37,9 +39,22 @@ public class MemberJpaRepository {
                 .getResultList();
     }
 
+    public List<Member> findAll_QueryDsl() {
+        return queryFactory
+                .selectFrom(member)
+                .fetch();
+    }
+
     public List<Member> findByUsername(String username) {
         return em.createQuery("select m from Member m where m.username = :username", Member.class)
                 .setParameter("username", username)
                 .getResultList();
+    }
+
+    public List<Member> findByUsername_QueryDsl(String username) {
+        return queryFactory
+                .selectFrom(member)
+                .where(member.username.eq(username))
+                .fetch();
     }
 }
